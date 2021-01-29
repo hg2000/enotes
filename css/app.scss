@@ -1,0 +1,164 @@
+$padding-content: 1%;
+$margin-content-top: 1%;
+$margin-content-left: 1%;
+$margin-content-right: 1%;
+$content-width: 100% - $margin-content-left - $margin-content-right;
+$border-size: 1px;
+
+#container {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+#app-content-vue {
+	background-color: $color-background-dark;
+}
+
+.card {
+	display: flex;
+	flex-wrap: wrap;
+	width: 100%;
+	border: $border-size;
+	padding: $padding-content;
+	background-color: $color-main-background;
+	border-radius: $border-radius;
+	border-color: $color-border;
+	margin-left: $margin-content-left;
+	margin-top: $margin-content-top;
+	max-width: 100% - $margin-content-left - $margin-content-right;
+}
+
+
+.card-3 {
+	@media (min-width: 768px) {
+		max-width: (100% - $margin-content-left * 2 - $margin-content-right) / 2;
+		&:nth-child(2) {
+			margin-right: $margin-content-right;
+		}
+	}
+	@media (min-width: 992px) {
+		max-width: (100% - $margin-content-left * 3 - $margin-content-right) / 3;
+		&:nth-child(2) {
+			margin-right: inherit;
+		}
+		&:nth-child(3) {
+			margin-right: $margin-content-right;
+		}
+	}
+}
+
+.meta-wrap {
+	align-self: flex-end;
+}
+
+.meta-tag {
+	font-size: 10px;
+	padding: 2%;
+	background-color: $color-background-hover;
+	border-radius: $border-radius;
+	border-color: $color-border;
+}
+
+.settings-button {
+	background-image: var(--icon-settings-dark-000);
+	background-position: 13px center;
+	background-repeat: no-repeat;
+	background-color: transparent;
+	border: none;
+	position: fixed;
+	z-index: 100;
+	right: 2px;
+	width: 44px;
+	height: 44px;
+	opacity: .7;
+	border-radius: $border-radius;
+	top: 53px;
+
+	&:hover {
+		border: 1px solid;
+		background-color: rgba(127, 127, 127, 0.25);
+		opacity: 1;
+		border-radius: 22px;
+		border-color: rgba(127, 127, 127, 0.25) !important;
+		right: 3px;
+	}
+}
+
+.settings-text {
+	width: 50%;
+}
+
+
+.container-content-full {
+	background-color: $color-main-background;
+	margin-left: 1%;
+	margin-top: 1%;
+	width: 100%;
+	height: 100%;
+	padding: $padding-content;
+}
+
+.container-settings {
+	padding: 0 20px;
+}
+
+.alert {
+	position: fixed;
+	padding: .75rem 1.25rem;
+	padding-right: 4rem;
+	margin-bottom: 1rem;
+	border: 1px solid transparent;
+	border-top-color: transparent;
+	border-right-color: transparent;
+	border-bottom-color: transparent;
+	border-left-color: transparent;
+	border-radius: .25rem;
+	left: 50%;
+	transform: translateX(-50%);
+	max-width: 400px;
+	cursor: pointer;
+
+	.close, .close:active, .close:not(:disabled):not(.primary), .close:hover {
+		font-size: 1.5rem;
+		font-weight: 700;
+		line-height: 1;
+		color: #000;
+		text-shadow: 0 1px 0 #fff;
+		position: absolute;
+		top: 0;
+		right: 2px;
+
+		color: inherit;
+		background-color: inherit;
+		border: none;
+		opacity: .5;
+
+		&:hover {
+			opacity: 1;
+		}
+	}
+}
+
+.alert-error {
+	color: #721c24;
+	background-color: #f8d7da;
+	border-color: #f5c6cb;
+}
+
+.alert-success {
+	color: #155724;
+	background-color: #d4edda;
+	border-color: #c3e6cb;
+}
+
+.icon-loading {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-top: -16px;
+	margin-left: -16px;
+}
+
+.settings-group {
+	margin-bottom: 5%;
+}
