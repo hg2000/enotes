@@ -2,16 +2,13 @@
 
 namespace OCA\Enotes\Db;
 
-use OCA\Enotes\AppInfo\Application;
 use OCA\Enotes\Service\MailService;
-use OCP\AppFramework\App;
 use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\IDBConnection;
 
-
-class SettingsMapper extends QBMapper {
-
+class SettingsMapper extends QBMapper
+{
 	/**
 	 * @var MailService
 	 */
@@ -22,47 +19,43 @@ class SettingsMapper extends QBMapper {
 	 */
 	protected $defaultSettings;
 
+	protected $propertiesToSerialize = ['mailAccounts'];
+
 	public function __construct(
 		IDbConnection $db,
-		MailService $mailService) {
+		MailService $mailService)
+	{
 		parent::__construct($db, 'enote_settings', Settings::class);
-
-		$this->mailService = $mailService;
-		$this->defaultSettings = [];
-		$this->defaultSettings['mailAccounts'] = array_map(function ($v) {
-			$mailAccount = [];
-			$mailAccount['email'] = $v->getEMailAddress();
-			$mailAccount['id'] = $v->getId();
-			$mailAccount['active'] = true;
-			return $mailAccount;
-		}, $this->mailService->getMailAccounts());
-
-		$this->defaultSettings['types'] = [
-			[
-				'key' => 'kindle',
-				'name' => 'Amazon Kindle',
-				'senders' => 'no-reply@amazon.com'
-			]
-		];
-
 	}
 
 	/**
-	 * Creates a new empty settings object
-	 *
-	 * @param string $userId
-	 * @return Entity
+	 * @param Settings $entity
+	 * @return Settings
 	 */
-	public function create(string $userId): Entity {
-
-		$app = new App(Application::APP_ID);
-		$entity = $app->getContainer()->get(Settings::class);
-		$entity->setUserId($userId);
+	protected function prepareforStorage(Settings $entity): Settings
+	{
+		$properties = get_object_vars($entity);
+		foreach ($properties as $propertyKey => $propertyValue) {
+			if (in_array($propertyKey, $this->propertiesToSerialize)) {
+				$entity->$propertyKey = serialize($propertyValue);
+			}
+		}
 		return $entity;
 	}
 
-	public function findByUserId(string $userId): Entity {
+	protected function prepareForLoading(Settings $entity)
+	{
+		$properties = get_object_vars($entity);
+		foreach ($properties as $propertyKey => $propertyValue) {
+			if (in_array($propertyKey, $this->propertiesToSerialize)) {
+				$entity->$propertyKey = unserialize($propertyValue);
+			}
+		}
+		return $entity;
+	}
 
+	public function findByUserId(string $userId): Entity
+	{
 		$qb = $this->db->getQueryBuilder();
 		$qb->select('*')
 			->from('enote_settings')
@@ -72,7 +65,33 @@ class SettingsMapper extends QBMapper {
 		return $this->findEntity($qb);
 	}
 
-	public function getDefaultsettings(): array {
-		return $this->defaultSettings;
+	/**
+	 * Creates a new entry in the db from an entity
+	 * @param Entity $entity the entity that should be created
+	 * @psalm-param T $entity the entity that should be created
+	 * @return Entity the saved entity with the set id
+	 * @psalm-return T the saved entity with the set id
+	 * @since 14.0.0
+	 */
+	public function insert(Entity $entity): Entity
+	{
+		$entity = $this->prepareForStorage($entity);
+		return parent::insert($entity);
+	}
+
+	/**
+	 * Updates an entry in the db from an entity
+	 * @param Entity $entity the entity that should be created
+	 * @psalm-param T $entity the entity that should be created
+	 * @return Entity the saved entity with the set id
+	 * @psalm-return T the saved entity with the set id
+	 * @throws \InvalidArgumentException if entity has no id
+	 * @since 14.0.0
+	 */
+	public function update(Entity $entity): Entity
+	{
+		$entity = $this->prepareforStorage($entity);
+		return parent::update($entity);
 	}
 }
+

@@ -3,64 +3,67 @@ declare(strict_types=1);
 
 namespace OCA\Enotes\Controller;
 
+use OCA\Enotes\AppInfo\Application;
+use OCA\Enotes\Contracts\MailAdapterInterface;
 use OCA\Enotes\Db\SettingsMapper;
 use OCA\Enotes\Db\Settings;
+use OCA\Enotes\MailAdapterTest;
+use OCP\AppFramework\App;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\JSONResponse;
+use Exception;
 use OCP\IL10N;
 use OCP\IRequest;
-use OCA\Enotes\Service\MailService;
 
-class SettingsController extends Controller {
+class SettingsController extends Controller
+{
+	protected IL10N $l;
 
-	/**
-	 * @var MailService
-	 */
-	protected $mailService;
+	protected SettingsMapper $settingsMapper;
 
-	/**
-	 * @var SettingsMapper
-	 */
-	protected $settingsMapper;
+	protected Settings $settings;
+
+	protected string $userId;
 
 	/**
-	 * @var Settings
+	 * @var MailAdapterInterface MailAdapterTest
 	 */
-	protected $settings;
+	protected $mailAdapter;
 
 	public function __construct(
 		$appName,
+		IL10N $l,
 		IRequest $request,
-		MailService $mailService,
 		SettingsMapper $settingsMapper,
-		Settings $settings,
+		MailAdapterTest $mailAdapter,
 		?string $UserId
-	) {
+	)
+	{
 		parent::__construct($appName, $request);
 		$this->appName = $appName;
-		$this->mailService = $mailService;
+		$this->l = $l;
 		$this->settingsMapper = $settingsMapper;
+		$this->mailAdapter = $mailAdapter;
 		$this->userId = $UserId;
-		$this->settings = $settings;
 	}
 
 	/**
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
 	 */
-	public function get() {
-
+	public function get()
+	{
 		try {
-			$this->settings = $this->settingsMapper->findByUserId($this->userId);
-			$this->settings->mapWithDefaultSettings($this->settingsMapper->getDefaultsettings());
+			$settings = $this->settingsMapper->findByUserId($this->userId);
 		} catch (DoesNotExistException $e) {
-			$this->settings = $this->settingsMapper->create($this->userId);
-			$this->settings->mapWithDefaultSettings($this->settingsMapper->getDefaultsettings());
-			$this->settingsMapper->insert($this->settings);
+			$settings = $this->mailAdapter->getDefaultSettings();
+			$settings->setUserId($this->userId);
 		}
-		return new JSONResponse(json_encode($this->settings));;
+
+		$settingsJson = json_encode($settings);
+		return new JSONResponse($settingsJson);
 	}
 
 	/**
@@ -70,11 +73,32 @@ class SettingsController extends Controller {
 	 * @param array $mail
 	 * @param array $types
 	 */
-	public function update(array $mailAccounts = [], array $types = []) {
+	public function update(array $settings = [])
+	{
+		$settingsParams = $settings;
+		$isInsert = false;
+		try {
+			$settings = $this->settingsMapper->findByUserId($this->userId);
+		} catch (DoesNotExistException $e) {
+			$app = new App(Application::APP_ID);
+			$settings = $app->getContainer()->get(Settings::class);
+			$isInsert = true;
+		}
+		$settings->setUserId($this->userId);
+		$settings->setMailAccounts($settingsParams['mailAccounts']);
+		/**
+		 * TODO: remove the dumy types
+		 */
+		$settings->setTypes("123");
 
-		$this->settings = $this->settingsMapper->findByUserId($this->userId);
-		$this->settings->setMailAccounts($mailAccounts);
-		$this->settings->setTypes($types);
-		$this->settingsMapper->update($this->settings);
+		try {
+			if ($isInsert) {
+				return $this->settingsMapper->insert($settings);
+			}
+			$this->settingsMapper->update($settings);
+		} catch (Exception $e) {
+			$message = $this->l->t('error.update') . $e->getMessage();
+			return new JSONResponse($message, Http::STATUS_CONFLICT);
+		}
 	}
 }

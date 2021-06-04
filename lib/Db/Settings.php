@@ -1,115 +1,48 @@
 <?php
+declare(strict_types=1);
 
 namespace OCA\Enotes\Db;
 
-use OCA\Enotes\Service\MailService;
 use OCP\AppFramework\Db\Entity;
 
-class Settings extends Entity implements \JsonSerializable {
+class Settings extends Entity
+{
+	public string $userId = '';
+
+	public $mailAccounts = [];
+
+	public string $types = '';
 
 	/**
-	 * @var
-	 */
-	protected $userId;
-
-	/**
-	 * @var MailService
-	 */
-	protected $mailService;
-
-	/**
-	 * @var string
-	 */
-	protected $mailAccounts;
-
-	public function setMailAccounts($accounts) {
-
-		if (is_array($accounts)) {
-			$this->mailAccounts = $this->serialize($accounts);
-		} else {
-			$this->mailAccounts = $accounts;
-		}
-		$this->markFieldUpdated('mailAccounts');
-	}
-
-	public function getMailAccountsArray(): array {
-
-		if (!$this->mailAccounts) {
-			return [];
-		}
-		return $this->unserialize($this->mailAccounts);
-	}
-
-	public function setTypes($types) {
-
-		if (is_array($types)) {
-			$this->types = $this->serialize($types);
-		} else {
-			$this->types = $types;
-		}
-		$this->markFieldUpdated('types');
-	}
-
-	public function getTypesArray(): array {
-
-		if (!$this->types) {
-			return [];
-		}
-		return $this->unserialize($this->types);
-	}
-
-	/**
-	 * Turns array into list
+	 * Maps the settings state so that it fits to the default settings
 	 *
-	 * @param array $array
-	 * @return string
+	 * @param array $defaultMailAccounts
+	 * @return $this
 	 */
-	protected function serialize(array $array): string {
+	public function mergeWithDefaultMailaccounts(array $defaultMailAccounts): Settings
+	{
+		if (empty($this->mailAccounts)) {
+			$this->setMailAccounts($defaultMailAccounts);
+			return $this;
+		}
 
-		return serialize($array);
-	}
+		$idsUser = array_column($this->mailAccounts, 'id');
+		$idsDefault = array_column($defaultMailAccounts, 'id');
 
-	/**
-	 * Turns list into array
-	 *
-	 * @param string $string
-	 * @return array
-	 */
-	protected function unserialize(string $string): array {
-		return unserialize($string);
-	}
+		$mailAccountsUser = array_combine($idsUser, $this->mailAccounts);
+		$mailAccountsDefault = array_combine($idsDefault, $defaultMailAccounts);
 
-	/**
-	 * Adjusts the settings state so that it fits to the default settings
-	 *
-	 * @param array $defaultSettings
-	 */
-	public function mapWithDefaultSettings(array $defaultSettings) {
-
-		$mailAccounts = $this->getMailAccountsArray();
-		if (empty($mailAccounts)) {
-			$this->setMailAccounts($defaultSettings['mailAccounts']);
-		} else {
-			$resultMailAccounts = [];
-			foreach ($defaultSettings['mailAccounts'] as $defaultMailAccount) {
-				foreach ($mailAccounts as $mailAccount) {
-					if ($defaultMailAccount['email'] === $mailAccount['email']) {
-						$defaultMailAccount['active'] = $mailAccount['active'];
-						break;
-					}
-				}
-				$resultMailAccounts[] = $defaultMailAccount;
+		$resultAccounts = [];
+		foreach($mailAccountsDefault as $idDefault => $accountDefault) {
+			$account = $accountDefault;
+			if (in_array($idDefault, $idsUser)) {
+				$account = $mailAccountsUser[$idDefault];
 			}
-			$this->setMailAccounts($resultMailAccounts);
+			$resultAccounts[] = $account;
 		}
 
-		$this->setTypes($defaultSettings['types']);
-	}
+		$this->setMailAccounts($resultAccounts);
 
-	public function jsonSerialize() {
-		$obj = new \StdClass();
-		$obj->mailAccounts = $this->getMailAccountsArray();
-		$obj->types = $this->getTypesArray();
-		return $obj;
+		return $this;
 	}
 }

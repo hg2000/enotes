@@ -7,15 +7,12 @@ use OCA\Enotes\Service\MailService;
 use OCA\Enotes\Service\NoteService;
 use OCA\Enotes\Controller\NoteController;
 use OCP\IL10N;
-use PHPUnit_Framework_TestCase;
-
-use OCP\AppFramework\Http;
-use OCP\AppFramework\Http\DataResponse;
 
 use OCA\NotesTutorial\Service\NotFoundException;
 
 
-class EnoteControllerTest extends PHPUnit_Framework_TestCase {
+class EnoteControllerTest extends TestCase
+{
 
 	protected $controller;
 	/**
@@ -52,7 +49,8 @@ class EnoteControllerTest extends PHPUnit_Framework_TestCase {
 	 */
 	protected $bookMapper;
 
-	public function setUp() {
+	public function setUp(): void
+	{
 		$this->request = $this->getMockBuilder('OCP\IRequest')->getMock();
 		$this->mailManager = $this->getMockBuilder('OCA\Mail\Contracts\IMailManager')->getMock();
 		$this->l = $this->getMockBuilder('OCP\IL10N')->getMock();
@@ -72,11 +70,9 @@ class EnoteControllerTest extends PHPUnit_Framework_TestCase {
 		$this->bookMapper = $this->getMockBuilder('OCA\Enotes\Db\BookMapper')
 			->disableOriginalConstructor()
 			->getMock();
-
 		$this->controller = $this->getMockBuilder('OCA\Enotes\Controller\NoteController')
 			->disableOriginalConstructor()
 			->getMock();
-
 
 		$this->controller = new NoteController(
 			'enotes',
@@ -91,12 +87,5 @@ class EnoteControllerTest extends PHPUnit_Framework_TestCase {
 			$this->bookMapper,
 			'Alice'
 		);
-
-	}
-
-	public function testOne() {
-
-		$responseClass = get_class($this->controller->list());
-		$this->assertEquals($responseClass, 'OCP\AppFramework\Http\DataResponse');
 	}
 }
