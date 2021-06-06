@@ -62,7 +62,8 @@ class SettingsMapper extends QBMapper
 			->where(
 				$qb->expr()->eq('user_id', $qb->createNamedParameter($userId))
 			);
-		return $this->findEntity($qb);
+		$entity = $this->findEntity($qb);
+		return $this->prepareForLoading($entity);
 	}
 
 	/**

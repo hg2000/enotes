@@ -165,7 +165,7 @@ class SettingsControllerTest extends TestCase
 
 	/**
 	 * When an account will be added to the default account, it must be added to the userAccount.
-	 * The already existing mailAccounts will not e changed.
+	 * The already existing mailAccounts will not be changed.
 	 */
 	public function testUpdateMailAccounts()
 	{
@@ -215,7 +215,6 @@ class SettingsControllerTest extends TestCase
 		$this->assertCount(3, $resultMailAccounts);
 		$this->assertEquals('mail3@xyz.de', $resultMailAccounts[2]['email']);
 		$this->assertFalse($resultMailAccounts[0]['active']);
-
 	}
 
 	/**
