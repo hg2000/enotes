@@ -26,7 +26,7 @@ import App from './App'
 
 Vue.prototype.t = translate
 Vue.prototype.n = translatePlural
-var bus = new Vue({});
+let bus = new Vue({})
 export default new Vue({
 	el: '#content',
 	render: h => h(App),

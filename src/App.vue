@@ -31,6 +31,7 @@
 				<Settings
 					v-if="view.settings"
 					@showSuccessAlert="showSuccessAlert($event)"
+					@showErrorAlert="showErrorAlert($event)"
 					@isLoading="displayLoadingIcon"
 					@stopLoading="hideLoadingIcon"
 					@fetchNotes="fetchNotes"
@@ -77,7 +78,7 @@ export default {
 			showLoadingIcon: false,
 			show: false,
 			starred: false,
-			settings: {'email': 'Lorem  ipsums'},
+			settings: {},
 			isSettingsPage: false,
 			alertMessage: '',
 			alertType: '',
@@ -96,7 +97,7 @@ export default {
 	},
 
 	mounted () {
-		this.getNotes()
+		//this.getNotes()
 	},
 	methods: {
 		handleError (error) {
@@ -164,7 +165,7 @@ export default {
 			vm.displayLoadingIcon()
 			axios
 				.get(routes.getFetch)
-				.then(function (response) {
+				.then(function () {
 					vm.showSuccessAlert("Fetched notes")
 				})
 				.catch(function (error) {

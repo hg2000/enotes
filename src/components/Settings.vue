@@ -1,5 +1,5 @@
 <template>
-	<div class="card card-1">
+	<div class="card card-1" v-show="isInitialized">
 		<form @submit.prevent="submit">
 			<div class="settings-group">
 				<div class="group-title">
@@ -33,17 +33,9 @@
 					</div>
 				</div>
 				<div>
-					<select name="type1">
-						<option v-for="type in settings.types" :value="type.key">{{type.name}}</option>
-					</select>
-
-					<input
-						class="settings-text"
-						:value="settings.types[0].senders"
-						type="text"
-						name="type1-senders"
-						id="senders"
-						disabled>
+					<input class="Text"
+						   name="types"
+						   v-model="settings.types">
 				</div>
 
 			</div>
@@ -71,21 +63,20 @@ import routes from '../routes'
 
 export default {
 	name: 'Settings',
-	data () {
+	data() {
 		return {
-			settings: {
-			}
+			isInitialized: false,
+			settings: {}
 		}
 	},
-	mounted () {
+	mounted() {
 		this.get()
 	},
 	methods: {
-		emitSuccessAlert (message) {
+		emitSuccessAlert(message) {
 			this.$emit("showSuccessAlert", message);
 		},
-
-		emitErrorAlert (message) {
+		emitErrorAlert(message) {
 			this.$emit("showErrorAlert", message);
 		},
 		emitIsLoading() {
@@ -95,27 +86,29 @@ export default {
 			this.$emit("stopLoading")
 		},
 
-		get () {
+		get() {
 			const vm = this
 			vm.emitIsLoading()
 			axios
 				.get(routes.getSettings)
 				.then(function (response) {
 					vm.settings = JSON.parse(response.data)
+					vm.isInitialized = true
 					vm.emitStopLoading()
+
 				})
 				.catch(function (error) {
 					vm.emitErrorAlert(error)
+					vm.isInitialized = true
 					vm.emitStopLoading()
 				})
 		},
-		updateSettings () {
+		updateSettings() {
 			const vm = this
 			vm.emitIsLoading()
 			axios
-				.put(routes.updateSettings, vm.settings)
-				.then(function (response) {
-
+				.put(routes.updateSettings, {settings: vm.settings})
+				.then(function () {
 					vm.emitSuccessAlert('Settings saved.')
 					vm.emitStopLoading()
 				})

@@ -7,7 +7,7 @@ use OCP\DB\ISchemaWrapper;
 use OCP\Migration\SimpleMigrationStep;
 use OCP\Migration\IOutput;
 
-class Version000000Date202012271159 extends SimpleMigrationStep {
+class Version2Date20210529144156 extends SimpleMigrationStep {
 
 	/**
 	 * @param IOutput $output
@@ -124,9 +124,9 @@ class Version000000Date202012271159 extends SimpleMigrationStep {
 				'notnull' => true,
 			]);
 
-
 			$table->setPrimaryKey(['id']);
 			$table->addIndex(['user_id'], 'user_id_index');
+			$table->addUniqueIndex(['user_id'], 'user_id_unique');
 		}
 
 		return $schema;
