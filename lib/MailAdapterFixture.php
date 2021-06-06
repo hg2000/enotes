@@ -4,7 +4,7 @@ namespace OCA\Enotes;
 
 use OCA\Enotes\Db\Settings;
 
-class MailAdapterTest
+class MailAdapterFixture
 {
 	protected Settings $defaultSettings;
 
