@@ -7,7 +7,8 @@ use OCA\Enotes\AppInfo\Application;
 use OCA\Enotes\Contracts\MailAdapterInterface;
 use OCA\Enotes\Db\SettingsMapper;
 use OCA\Enotes\Db\Settings;
-use OCA\Enotes\MailAdapterTest;
+use OCA\Enotes\MailAdapterFixture;
+use OCA\Enotes\MailAdapter;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Db\DoesNotExistException;
@@ -37,7 +38,7 @@ class SettingsController extends Controller
 		IL10N $l,
 		IRequest $request,
 		SettingsMapper $settingsMapper,
-		MailAdapterTest $mailAdapter,
+		MailAdapter $mailAdapter,
 		?string $UserId
 	)
 	{
@@ -56,9 +57,11 @@ class SettingsController extends Controller
 	public function get()
 	{
 		try {
+			$defaultSettings = $this->mailAdapter->getDefaultSettings();
 			$settings = $this->settingsMapper->findByUserId($this->userId);
+			$settings->mergeWithDefaultMailaccounts($defaultSettings->getMailAccounts());
 		} catch (DoesNotExistException $e) {
-			$settings = $this->mailAdapter->getDefaultSettings();
+			$settings = $defaultSettings;
 			$settings->setUserId($this->userId);
 		}
 
@@ -86,10 +89,7 @@ class SettingsController extends Controller
 		}
 		$settings->setUserId($this->userId);
 		$settings->setMailAccounts($settingsParams['mailAccounts']);
-		/**
-		 * TODO: remove the dumy types
-		 */
-		$settings->setTypes("123");
+		$settings->setTypes($settingsParams['types']);
 
 		try {
 			if ($isInsert) {

@@ -33,6 +33,7 @@ class MailAdapter
 	{
 		$defaultSettings = new Settings();
 		$defaultSettings->setMailAccounts($this->getMailAccountSettings());
+		$defaultSettings->setTypes($this->getTypes());
 		return $defaultSettings;
 	}
 
@@ -48,5 +49,10 @@ class MailAdapter
 			];
 		}
 		return $settings;
+	}
+
+	public function getTypes(): string {
+
+		return 'no-reply@amazon.com';
 	}
 }

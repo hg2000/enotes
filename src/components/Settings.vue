@@ -1,5 +1,5 @@
 <template>
-	<div class="card card-1">
+	<div class="card card-1" v-show="isInitialized">
 		<form @submit.prevent="submit">
 			<div class="settings-group">
 				<div class="group-title">
@@ -33,11 +33,9 @@
 					</div>
 				</div>
 				<div>
-					<!--
-					<select name="type1">
-						<option v-for="type in settings.types" :value="type.key">{{type.name}}</option>
-					</select>
--->
+					<input class="Text"
+						   name="types"
+						   v-model="settings.types">
 				</div>
 
 			</div>
@@ -67,6 +65,7 @@ export default {
 	name: 'Settings',
 	data() {
 		return {
+			isInitialized: false,
 			settings: {}
 		}
 	},
@@ -94,10 +93,13 @@ export default {
 				.get(routes.getSettings)
 				.then(function (response) {
 					vm.settings = JSON.parse(response.data)
+					vm.isInitialized = true
 					vm.emitStopLoading()
+
 				})
 				.catch(function (error) {
 					vm.emitErrorAlert(error)
+					vm.isInitialized = true
 					vm.emitStopLoading()
 				})
 		},

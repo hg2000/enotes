@@ -6,7 +6,7 @@ use OC\L10N\LazyL10N;
 use OCA\Enotes\Db\BookMapper;
 use OCA\Enotes\Db\Settings;
 use OCA\Enotes\Db\SettingsMapper;
-use OCA\Enotes\MailAdapterTest;
+use OCA\Enotes\MailAdapterFixture;
 use OCA\Enotes\Service\MailService;
 use OCA\Enotes\Service\NoteService;
 use OCA\Enotes\Controller\SettingsController;
@@ -61,7 +61,7 @@ class SettingsControllerTest extends TestCase
 
 	protected Settings $exampleSettings;
 
-	protected MailAdapterTest $mailAdapter;
+	protected MailAdapterFixture $mailAdapter;
 
 	protected array $settingsParams;
 
@@ -120,7 +120,7 @@ class SettingsControllerTest extends TestCase
 			->getMock();
 		$this->settingsMapper->method('findByUserId')->willReturn($this->settings);
 
-		$this->mailAdapter = $this->getMockBuilder(MailAdapterTest::class)
+		$this->mailAdapter = $this->getMockBuilder(MailAdapterFixture::class)
 			->getMock();
 
 		$this->mailAdapter->method('getDefaultSettings')
