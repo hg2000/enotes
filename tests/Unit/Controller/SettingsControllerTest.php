@@ -12,10 +12,7 @@ use OCA\Enotes\Service\NoteService;
 use OCA\Enotes\Controller\SettingsController;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\IL10N;
-
 use PHPunit\Framework\TestCase;
-use OCA\NotesTutorial\Service\NotFoundException;
-
 
 class SettingsControllerTest extends TestCase
 {
@@ -112,7 +109,8 @@ class SettingsControllerTest extends TestCase
 					'email' => 'mail2@xyz.de',
 					'active' => true
 				],
-			]
+			],
+			'types' => 'type1@type.de,type2@type.de'
 		];
 
 		$this->settingsMapper = $this->getMockBuilder(SettingsMapper::class)

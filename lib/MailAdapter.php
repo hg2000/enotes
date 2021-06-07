@@ -5,10 +5,12 @@ use OCA\Mail\Service\AccountService;
 use OCA\Mail\Contracts\IMailManager;
 use OCA\Mail\Db\Mailbox;
 use OCA\Mail\Contracts\IMailSearch;
+use OCA\Enotes\Contracts\IMailAdapter;
+
 
 use OCA\Enotes\Db\Settings;
 
-class MailAdapter
+class MailAdapter implements IMailAdapter
 {
 	protected string $currentUserId;
 

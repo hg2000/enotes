@@ -3,8 +3,9 @@
 namespace OCA\Enotes;
 
 use OCA\Enotes\Db\Settings;
+use OCA\Enotes\Contracts\IMailAdapter;
 
-class MailAdapterFixture
+class MailAdapterFixture implements IMailAdapter
 {
 	protected Settings $defaultSettings;
 

@@ -43,6 +43,8 @@ use OCP\IServerContainer;
 use OCP\User\Events\UserDeletedEvent;
 use OCP\Util;
 use Psr\Container\ContainerInterface;
+use OCA\Enotes\MailAdapter;
+use OCA\Enotes\Contracts\IMailAdapter;
 
 use OCA\Mail\Service\MailManager;
 
@@ -67,6 +69,7 @@ class Application extends App implements IBootstrap {
 		});
 
 		$context->registerServiceAlias(IMailManager::class, MailManager::class);
+		$context->registerServiceAlias(IMailAdapter::class, MailAdapter::class);
 
 	}
 

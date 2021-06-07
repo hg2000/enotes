@@ -4,11 +4,9 @@ declare(strict_types=1);
 namespace OCA\Enotes\Controller;
 
 use OCA\Enotes\AppInfo\Application;
-use OCA\Enotes\Contracts\MailAdapterInterface;
 use OCA\Enotes\Db\SettingsMapper;
 use OCA\Enotes\Db\Settings;
-use OCA\Enotes\MailAdapterFixture;
-use OCA\Enotes\MailAdapter;
+use OCA\Enotes\Contracts\IMailAdapter;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Db\DoesNotExistException;
@@ -38,7 +36,7 @@ class SettingsController extends Controller
 		IL10N $l,
 		IRequest $request,
 		SettingsMapper $settingsMapper,
-		MailAdapter $mailAdapter,
+		IMailAdapter $mailAdapter,
 		?string $UserId
 	)
 	{

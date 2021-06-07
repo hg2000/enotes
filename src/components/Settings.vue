@@ -33,7 +33,8 @@
 					</div>
 				</div>
 				<div>
-					<input class="Text"
+					<input type="text"
+						   class="settings-text"
 						   name="types"
 						   v-model="settings.types">
 				</div>
